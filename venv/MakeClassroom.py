@@ -1,7 +1,7 @@
 from openpyxl import load_workbook
-from openpyxl.utils import datetime
 import sys
 import json
+import string
 
 def map_headings(ws, heading_row=1, start_col='A'):
     excel_col_map = {}
@@ -40,11 +40,11 @@ def readClassroom(classroom_sheet):
     classroom_col_map = map_headings(classroom_sheet)
     class_id = classroom_sheet[classroom_col_map['Class ID'] + content_row]
     classroom_details = {
-        "class_name": classroom_sheet[classroom_col_map['Class name'] + content_row],
-        "school_name": classroom_sheet[classroom_col_map['School name'] + content_row],
-        "locality_10": classroom_sheet[classroom_col_map['Inspection'] + content_row],
-        "locality_20": classroom_sheet[classroom_col_map['Region'] + content_row],
-        "locality_30": classroom_sheet[classroom_col_map['District'] + content_row]
+        "class_name": string.capwords(classroom_sheet[classroom_col_map['Class name'] + content_row]),
+        "school_name": string.capwords(classroom_sheet[classroom_col_map['School name'] + content_row]),
+        "locality_10": string.capwords(classroom_sheet[classroom_col_map['Inspection'] + content_row]),
+        "locality_20": string.capwords(classroom_sheet[classroom_col_map['Region'] + content_row]),
+        "locality_30": string.capwords(classroom_sheet[classroom_col_map['District'] + content_row])
     }
     return classroom_details, class_id
 
@@ -54,7 +54,7 @@ def readTeachers(teachers_sheet):
     teacher_col_map = map_headings(teachers_sheet)
     while teachers_sheet[teacher_col_map['Teacher ID'] + str(teacher_row)] is not None:
         teacher_id = teachers_sheet[teacher_col_map['Teacher ID'] + str(teacher_row)]
-        teachers[teacher_id + "/name"] = teachers_sheet[teacher_col_map['Teacher name'] + str(teacher_row)]
+        teachers[teacher_id + "/name"] = string.capwords(teachers_sheet[teacher_col_map['Teacher name'] + str(teacher_row)])
         teacher_row += 1
     return teachers
 
@@ -72,8 +72,8 @@ def readStudents(students_sheet):
     while students_sheet[student_col_map['Student ID'] + str(student_row)] is not None:
         student_id = students_sheet[student_col_map['Student ID'] + str(student_row)]
         dateOfBirth = getDateOfBirth(students_sheet.wsheet[student_col_map['Date of Birth'] + str(student_row)].value)
-        students[student_id + "/first_name"] = students_sheet[student_col_map['First name'] + str(student_row)]
-        students[student_id + "/surname"] = students_sheet[student_col_map['Surname'] + str(student_row)]
+        students[student_id + "/first_name"] = string.capwords(students_sheet[student_col_map['First name'] + str(student_row)])
+        students[student_id + "/surname"] = string.capwords(students_sheet[student_col_map['Surname'] + str(student_row)])
         students[student_id + "/birth_date/dd"] = dateOfBirth["dd"]
         students[student_id + "/birth_date/mm"] = dateOfBirth["mm"]
         students[student_id + "/birth_date/yyyy"] = dateOfBirth["yyyy"]
