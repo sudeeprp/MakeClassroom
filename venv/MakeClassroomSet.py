@@ -16,7 +16,7 @@ def unique_id():
 def fill_name(name):
     filled_name = ""
     if name is not None:
-        filled_name = name
+        filled_name = name.strip()
     return filled_name
 
 def capped_name(name):
@@ -121,7 +121,8 @@ def readStudents(students_sheet):
     student_col_map = map_headings(students_sheet)
     students = {}
 
-    while students_sheet[student_col_map['Surname'] + str(student_row)] is not None:
+    while students_sheet[student_col_map['Surname'] + str(student_row)] is not None or \
+          students_sheet[student_col_map['First name'] + str(student_row)] is not None:
         class_id = students_sheet[student_col_map['UDISE Code'] + str(student_row)]
         student_id = getId(students_sheet, student_col_map['Student ID'], student_row)
         student_locprefix = class_id + "/students/" + student_id
@@ -131,7 +132,8 @@ def readStudents(students_sheet):
         students[student_locprefix + "/birth_date/dd"] = dateOfBirth["dd"]
         students[student_locprefix + "/birth_date/mm"] = dateOfBirth["mm"]
         students[student_locprefix + "/birth_date/yyyy"] = dateOfBirth["yyyy"]
-        students[student_locprefix + "/gender"] = students_sheet[student_col_map['Gender'] + str(student_row)]
+        students[student_locprefix + "/gender"] = \
+            students_sheet[student_col_map['Gender'] + str(student_row)].strip().lower()
         students[student_locprefix + "/grade"] = str(students_sheet[student_col_map['Grade'] + str(student_row)])
         student_row += 1
     return students
@@ -182,7 +184,8 @@ def readClassroomAndAssets(excel_file):
         classroom_and_assets['teachers'] = readTeachers(Sheet(w['Teachers']))
     if 'Students' in w:
         classroom_and_assets['students'] = readStudents(Sheet(w['Students']))
-    classroom_and_assets['students'].update(guestStudents)
+    if 'students' in classroom_and_assets:
+        classroom_and_assets['students'].update(guestStudents)
     return classroom_and_assets
 
 def writeJSON(outputfilename, classroom_and_assets):
