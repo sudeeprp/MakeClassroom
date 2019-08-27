@@ -2,16 +2,7 @@ from openpyxl import load_workbook
 import sys
 import json
 import string
-import random
-
-
-IDCharacters = "123456789ABCDEFGHJKLMNOPQRSTUVWXYZ"
-def unique_id():
-    id = ""
-    for x in range(8):
-        i = random.randint(0, len(IDCharacters)-1)
-        id += IDCharacters[i]
-    return id
+from unique_id import unique_id
 
 def fill_name(name):
     filled_name = ""
